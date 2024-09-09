@@ -1,14 +1,17 @@
 "use client"
-import { addUser, fetchUsers, loginUser } from "@/api/auth/data";
+import ActivityIndicator from "@/components/ActivityIndicator";
+import useAuth from "@/hooks/useAuth";
 import Link from "next/link";
+import { useState } from "react";
 
 const SignUp = () => {
+  const { isLoading, registerUser } = useAuth()
+  const [email, setemail] = useState('')
+  const [password, setpassword] = useState("")
+  const [confirmPassword, setconfirmPassword] = useState("")
 
-  const handleSubmit = async (event) => {
-    const data = await loginUser("test1@gmail.com", "hamza");
-    console.log('====================handleSubmit================');
-    console.log(data);
-    console.log('====================handleSubmit================');
+  const handleSubmit = async () => {
+    await registerUser(email, password, confirmPassword)
   };
 
   return (
@@ -23,6 +26,7 @@ const SignUp = () => {
                     <h4 className="mb-6 text-xl font-semibold">
                       The web framework for perfectionists with deadlines.
                     </h4>
+                    {isLoading && <ActivityIndicator />}
                     <p className="text-sm">
                       Lorem ipsum dolor sit amet, consectetur adipisicing elit,
                       sed do eiusmod tempor incididunt ut labore et dolore magna
@@ -47,9 +51,13 @@ const SignUp = () => {
                       <div className="grid">
                         <input
                           type="text"
-                          label="Username"
-                          placeholder="Enter Username"
+                          label="email"
+                          placeholder="Enter Email"
                           className="mb-4 py-3 dark:bg-white bg-gray-100 border-2 border-black dark:text-black rounded px-3 text-sm"
+                          value={email}
+                          onChange={(e) => {
+                            setemail(e.target.value)
+                          }}
                         ></input>
 
                         <input
@@ -57,12 +65,20 @@ const SignUp = () => {
                           type="Password"
                           label="Password"
                           className="mb-4 py-3 dark:bg-white bg-gray-100 border-2 border-black dark:text-black rounded px-3 text-sm"
+                          value={password}
+                          onChange={(e) => {
+                            setpassword(e.target.value)
+                          }}
                         ></input>
                         <input
                           placeholder="Confirm Password"
                           type="Password"
                           label="Password"
                           className="mb-4 py-3 dark:bg-white bg-gray-100 border-2 border-black dark:text-black rounded px-3 text-sm"
+                          value={confirmPassword}
+                          onChange={(e) => {
+                            setconfirmPassword(e.target.value)
+                          }}
                         ></input>
                       </div>
 

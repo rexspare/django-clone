@@ -1,6 +1,8 @@
 //api/data.ts
 import { callUsers } from "../../lib/db";
-
+const {
+    pbkdf2Sync,
+} = require('crypto');
 export async function fetchUsers() {
 
     try {
@@ -19,14 +21,11 @@ export async function fetchUsers() {
 export async function addUser(email: string, password: string) {
     try {
         const query = `INSERT INTO users (email, password) VALUES (?, ?)`;
-        const data = [email, password];
+        const key = pbkdf2Sync(password, 'salt', 100000, 64, 'sha512');
+        const hashedPass = key.toString('hex')
+        const data = [email, hashedPass];
         const response = await callUsers(query, data);
-        if (response.success == true) {
-            return response;
-        } else {
-            return response;
-        }
-
+        return response;
     } catch (error) {
         return error;
     }
@@ -44,9 +43,11 @@ export async function loginUser(email: string, password: string) {
             if (users?.length == 0) {
                 return { success: false, message: "Email not found." };
             }
-
+            const key = pbkdf2Sync(password, 'salt', 100000, 64, 'sha512');
+            const hashedPass = key.toString('hex')
             const user = users[0];
-            if (user?.password == password) {
+            if (user?.password == hashedPass) {
+                delete user.password;
                 return { success: true, user };
             } else {
                 return { success: false, message: "Invalid password." };

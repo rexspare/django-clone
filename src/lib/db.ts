@@ -15,13 +15,11 @@ export async function callUsers(query: string, data: any) {
         const [result] = await db.execute(query, data);
         await db.end();
         return { success: true, result };
-        return { success: true, result }; // figure out a way for this
     } catch (error) {
         if (error?.code == "ER_DUP_ENTRY") {
             return { success: false, message: "Email already exists" };
         }
-
-        return { success: false, };
+        return { success: false, error };
     }
 
 }
